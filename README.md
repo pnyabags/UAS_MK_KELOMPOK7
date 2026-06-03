@@ -4,7 +4,7 @@
   
 ## Kelompok
 Dikembangkan oleh Kelompok 7
-- Ketua: Bagas Arya Putra  [Github](https://github.com/pnyabags)
+- Ketua: Bagas Arya Putra - 23552011328 [Github](https://github.com/pnyabags)
 - Anggota 1: Mochammad Raffi Fadhillah [Github](-) 
 - Anggota 2: Rafi Nur Muhammad Fauzi - 23552011307 [Github](https://github.com/RafiNur06)
   
