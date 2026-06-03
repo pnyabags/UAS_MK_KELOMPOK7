@@ -5,7 +5,7 @@
 ## Kelompok
 Dikembangkan oleh Kelompok 7
 - Ketua: Bagas Arya Putra  [Github](https://github.com/pnyabags)
-- Anggota 1: Nama [Github](-) 
+- Anggota 1: Mochammad Raffi Fadhillah [Github](-) 
 - Anggota 2: Nama [Github](-)
   
 ## Judul Studi Kasus
