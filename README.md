@@ -28,9 +28,9 @@ Pada umumnya lampu masih dikendalikan menggunakan saklar manual sehingga penggun
 ## Fitur
 - Bisa kontrol lampu dari jarak jauh ✔️
 - Lampu Memiliki Daya tambahan seperti baterai. ✔️
-- Melihat persentase baterai. ✔️
+- Pengisian daya baterai menggunakan matahari melalui solar panel. ✔️
 
-## Tampilan Aplikasi
+## Tampilan Hardware
 <img width="3264" height="2448" alt="IMG-20260626-WA0031" src="https://github.com/user-attachments/assets/3f95e535-fc55-426a-90bd-17e9c3456ef8" />
 
 Fakultas Industri Kreatif, Departemen Teknik Informatika,  
