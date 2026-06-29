@@ -1,120 +1,151 @@
 #include <WiFi.h>
-#include <WiFiClientSecure.h>
-#include <PubSubClient.h>
+#include <WebServer.h>
 
-//=========================
-// WiFi
-//=========================
-const char* ssid = "mi 10T";
-const char* password = "solderpanas";
+const char* ssid = "pai";
+const char* password = "123456789";
 
-//=========================
-// HiveMQ Cloud
-//=========================
-const char* mqtt_server = "40b58b887c7945d58ff8d5f7d1bc611a.s1.eu.hivemq.cloud";
-const int mqtt_port = 8883;
-
-// GANTI DENGAN USERNAME & PASSWORD
-const char* mqtt_user = "lampuajaib";
-const char* mqtt_pass = "Lampuajaib1";
-
-//=========================
-// Relay
-//=========================
 #define RELAY_PIN 27
 
-WiFiClientSecure espClient;
-PubSubClient client(espClient);
+WebServer server(80);
 
-//=====================================================
-// Callback MQTT
-//=====================================================
+bool lampState = false;
 
-void callback(char* topic, byte* payload, unsigned int length)
+//===========================
+// Halaman Web
+//===========================
+
+void handleRoot()
 {
-  String message = "";
+  String html = R"rawliteral(
+<!DOCTYPE html>
+<html>
 
-  for (int i = 0; i < length; i++)
-    message += (char)payload[i];
+<head>
 
-  Serial.print("Topic : ");
-  Serial.println(topic);
+<meta charset="UTF-8">
 
-  Serial.print("Message : ");
-  Serial.println(message);
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  if (message == "ON")
-  {
-    digitalWrite(RELAY_PIN, LOW);      // Active LOW
-    client.publish("lampu/status", "ON");
-  }
+<title>Lampu Ajaib</title>
 
-  else if (message == "OFF")
-  {
-    digitalWrite(RELAY_PIN, HIGH);
-    client.publish("lampu/status", "OFF");
-  }
+<style>
+
+body{
+
+font-family:Arial;
+background:#f5f5f5;
+text-align:center;
+margin-top:60px;
+
 }
 
-//=====================================================
-// Connect WiFi
-//=====================================================
+.card{
 
-void setup_wifi()
-{
-  delay(100);
+background:white;
+width:320px;
+margin:auto;
+padding:30px;
+border-radius:15px;
+box-shadow:0 0 15px rgba(0,0,0,.2);
 
-  Serial.println();
-  Serial.print("Connecting WiFi ");
-
-  Serial.println(ssid);
-
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println();
-  Serial.println("========================");
-  Serial.println("WiFi Connected");
-  Serial.print("IP Address : ");
-  Serial.println(WiFi.localIP());
-  Serial.println("========================");
 }
 
-//=====================================================
-// MQTT Reconnect
-//=====================================================
+button{
 
-void reconnect()
-{
-  while (!client.connected())
-  {
-    Serial.print("Connecting MQTT...");
+width:120px;
+height:45px;
+font-size:18px;
+margin:10px;
+border:none;
+border-radius:10px;
+cursor:pointer;
 
-    if (client.connect("ESP32Client", mqtt_user, mqtt_pass))
-    {
-      Serial.println(" Connected");
-
-      client.subscribe("lampu/control");
-
-      client.publish("lampu/status", "ESP32 Online");
-    }
-    else
-    {
-      Serial.print(" Failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" retry in 5 sec");
-
-      delay(5000);
-    }
-  }
 }
 
-//=====================================================
+.on{
+
+background:#2ecc71;
+color:white;
+
+}
+
+.off{
+
+background:#e74c3c;
+color:white;
+
+}
+
+.status{
+
+font-size:22px;
+margin:20px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Lampu Ajaib</h2>
+)rawliteral";
+
+  html += "<div class='status'>Status : ";
+
+  if (lampState)
+    html += "<b style='color:green;'>ON</b>";
+  else
+    html += "<b style='color:red;'>OFF</b>";
+
+  html += "</div>";
+
+  html += R"rawliteral(
+
+<a href="/on">
+<button class="on">ON</button>
+</a>
+
+<a href="/off">
+<button class="off">OFF</button>
+</a>
+
+</div>
+
+</body>
+</html>
+
+)rawliteral";
+
+  server.send(200, "text/html", html);
+}
+
+//===========================
+
+void lampON()
+{
+  lampState = true;
+
+  digitalWrite(RELAY_PIN, LOW);      // Relay Active LOW
+
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
+void lampOFF()
+{
+  lampState = false;
+
+  digitalWrite(RELAY_PIN, HIGH);
+
+  server.sendHeader("Location", "/");
+  server.send(303);
+}
+
+//===========================
 
 void setup()
 {
@@ -122,27 +153,37 @@ void setup()
 
   pinMode(RELAY_PIN, OUTPUT);
 
-  // Relay OFF
   digitalWrite(RELAY_PIN, HIGH);
 
-  setup_wifi();
+  WiFi.begin(ssid,password);
 
-  // Untuk HiveMQ Cloud
-  espClient.setInsecure();
+  Serial.print("Connecting");
 
-  client.setServer(mqtt_server, mqtt_port);
+  while(WiFi.status()!=WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
 
-  client.setCallback(callback);
+  Serial.println();
+  Serial.println("WiFi Connected");
+
+  Serial.print("IP Address : ");
+
+  Serial.println(WiFi.localIP());
+
+  server.on("/",handleRoot);
+
+  server.on("/on",lampON);
+
+  server.on("/off",lampOFF);
+
+  server.begin();
+
+  Serial.println("Web Server Started");
 }
-
-//=====================================================
 
 void loop()
 {
-  if (!client.connected())
-  {
-    reconnect();
-  }
-
-  client.loop();
+  server.handleClient();
 }
