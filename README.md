@@ -18,7 +18,8 @@ Pada umumnya lampu masih dikendalikan menggunakan saklar manual sehingga penggun
 Lampu dikendalikan melalui web service yang berjalan pada ESP32. ESP32 menerima permintaan (HTTP request) dari browser, kemudian mengontrol modul relay yang berfungsi sebagai saklar elektronik untuk menyalakan atau mematikan lampu.
 
 ## Fitur
-- Bisa kontrol lampu dari jarak jauh ✔️
+- Bisa kontrol lampu melalui website ✔️
+- Lampu otomatis mengikuti jam yang sudah diatur ✔️
 - Lampu Memiliki Daya tambahan seperti baterai. ✔️
 - Pengisian daya baterai menggunakan matahari melalui solar panel. ✔️
 
@@ -35,6 +36,7 @@ Lampu dikendalikan melalui web service yang berjalan pada ESP32. ESP32 menerima 
 | 7 | Mini 360 Small Adjustable Dc Step Down 2A 5V-23V to 1V-7V | 1 | Mengatur daya yang keluar dari led. |
 | 8 | Baterai Lithium | 1 | Menyimpan energi listrik sebagai sumber daya utama sistem. |
 | 9 | Breadboard | 1 | Media pemasangan rangkaian sementara tanpa penyolderan. |
+| 10 | RTC DS1302 | 1 | Sensor waktu untuk otomatis nyala/mati led. |
 
 ## Alur Kerja
 - Panel surya menghasilkan energi listrik ketika terkena cahaya.
@@ -44,10 +46,9 @@ Lampu dikendalikan melalui web service yang berjalan pada ESP32. ESP32 menerima 
 - ESP32 terhubung ke jaringan WiFi dan menjalankan web service (atau MQTT pada versi lain dari proyekmu).
 - Ketika pengguna menekan tombol ON atau OFF pada halaman web, ESP32 mengubah kondisi GPIO27.
 - GPIO27 mengendalikan relay.
+- GPIO21 dan GPIO22 mengendalikan RTC
 - Relay menghubungkan atau memutus aliran listrik menuju LED HPL sehingga lampu menyala atau mati.
-
-
-
+- Modul RTC menampilkan waktu untuk mengetahui jam led nyala/mati.
 
 ## Tampilan Hardware
 <img width="3264" height="2448" alt="IMG-20260626-WA0031" src="https://github.com/user-attachments/assets/3f95e535-fc55-426a-90bd-17e9c3456ef8" />
